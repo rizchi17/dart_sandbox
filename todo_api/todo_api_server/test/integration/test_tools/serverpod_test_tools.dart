@@ -14,6 +14,7 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
+import 'package:todo_api_server/src/generated/todo_class.dart' as _i4;
 import 'package:todo_api_server/src/generated/protocol.dart';
 import 'package:todo_api_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -95,6 +96,8 @@ void withServerpod(
 
 class TestEndpoints {
   late final _ExampleEndpoint example;
+
+  late final _TodoEndpoint todo;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -105,6 +108,10 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.EndpointDispatch endpoints,
   ) {
     example = _ExampleEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    todo = _TodoEndpoint(
       endpoints,
       serializationManager,
     );
@@ -143,6 +150,135 @@ class _ExampleEndpoint {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _TodoEndpoint {
+  _TodoEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<List<_i4.Todo>> getAllTodos(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'todo',
+        method: 'getAllTodos',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'todo',
+          methodName: 'getAllTodos',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i4.Todo>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> addTodo(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String text,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'todo',
+        method: 'addTodo',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'todo',
+          methodName: 'addTodo',
+          parameters: _i1.testObjectToJson({'text': text}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> updateTodo(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i4.Todo todo,
+    required int index,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'todo',
+        method: 'updateTodo',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'todo',
+          methodName: 'updateTodo',
+          parameters: _i1.testObjectToJson({
+            'todo': todo,
+            'index': index,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> deleteTodo(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int index,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'todo',
+        method: 'deleteTodo',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'todo',
+          methodName: 'deleteTodo',
+          parameters: _i1.testObjectToJson({'index': index}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

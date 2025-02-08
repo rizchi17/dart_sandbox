@@ -13,6 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'example.dart' as _i3;
 import 'todo_class.dart' as _i4;
+import 'package:todo_api_server/src/generated/todo_class.dart' as _i5;
 export 'example.dart';
 export 'todo_class.dart';
 
@@ -88,6 +89,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i4.Todo?>()) {
       return (data != null ? _i4.Todo.fromJson(data) : null) as T;
+    }
+    if (t == List<_i5.Todo>) {
+      return (data as List).map((e) => deserialize<_i5.Todo>(e)).toList()
+          as dynamic;
     }
     try {
       return _i2.Protocol().deserialize<T>(data, t);

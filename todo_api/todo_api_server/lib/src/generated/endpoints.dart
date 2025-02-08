@@ -11,6 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/example_endpoint.dart' as _i2;
+import '../endpoints/todo_endpoint.dart' as _i3;
+import 'package:todo_api_server/src/generated/todo_class.dart' as _i4;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -21,7 +23,13 @@ class Endpoints extends _i1.EndpointDispatch {
           server,
           'example',
           null,
-        )
+        ),
+      'todo': _i3.TodoEndpoint()
+        ..initialize(
+          server,
+          'todo',
+          null,
+        ),
     };
     connectors['example'] = _i1.EndpointConnector(
       name: 'example',
@@ -45,6 +53,81 @@ class Endpoints extends _i1.EndpointDispatch {
             params['name'],
           ),
         )
+      },
+    );
+    connectors['todo'] = _i1.EndpointConnector(
+      name: 'todo',
+      endpoint: endpoints['todo']!,
+      methodConnectors: {
+        'getAllTodos': _i1.MethodConnector(
+          name: 'getAllTodos',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['todo'] as _i3.TodoEndpoint).getAllTodos(session),
+        ),
+        'addTodo': _i1.MethodConnector(
+          name: 'addTodo',
+          params: {
+            'text': _i1.ParameterDescription(
+              name: 'text',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['todo'] as _i3.TodoEndpoint).addTodo(
+            session,
+            text: params['text'],
+          ),
+        ),
+        'updateTodo': _i1.MethodConnector(
+          name: 'updateTodo',
+          params: {
+            'todo': _i1.ParameterDescription(
+              name: 'todo',
+              type: _i1.getType<_i4.Todo>(),
+              nullable: false,
+            ),
+            'index': _i1.ParameterDescription(
+              name: 'index',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['todo'] as _i3.TodoEndpoint).updateTodo(
+            session,
+            todo: params['todo'],
+            index: params['index'],
+          ),
+        ),
+        'deleteTodo': _i1.MethodConnector(
+          name: 'deleteTodo',
+          params: {
+            'index': _i1.ParameterDescription(
+              name: 'index',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['todo'] as _i3.TodoEndpoint).deleteTodo(
+            session,
+            index: params['index'],
+          ),
+        ),
       },
     );
   }

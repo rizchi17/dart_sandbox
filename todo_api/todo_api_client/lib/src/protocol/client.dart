@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'protocol.dart' as _i3;
+import 'package:todo_api_client/src/protocol/todo_class.dart' as _i3;
+import 'protocol.dart' as _i4;
 
 /// {@category Endpoint}
 class EndpointExample extends _i1.EndpointRef {
@@ -24,6 +25,48 @@ class EndpointExample extends _i1.EndpointRef {
         'example',
         'hello',
         {'name': name},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointTodo extends _i1.EndpointRef {
+  EndpointTodo(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'todo';
+
+  _i2.Future<List<_i3.Todo>> getAllTodos() =>
+      caller.callServerEndpoint<List<_i3.Todo>>(
+        'todo',
+        'getAllTodos',
+        {},
+      );
+
+  _i2.Future<void> addTodo({required String text}) =>
+      caller.callServerEndpoint<void>(
+        'todo',
+        'addTodo',
+        {'text': text},
+      );
+
+  _i2.Future<void> updateTodo({
+    required _i3.Todo todo,
+    required int index,
+  }) =>
+      caller.callServerEndpoint<void>(
+        'todo',
+        'updateTodo',
+        {
+          'todo': todo,
+          'index': index,
+        },
+      );
+
+  _i2.Future<void> deleteTodo({required int index}) =>
+      caller.callServerEndpoint<void>(
+        'todo',
+        'deleteTodo',
+        {'index': index},
       );
 }
 
@@ -43,7 +86,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i3.Protocol(),
+          _i4.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -54,12 +97,18 @@ class Client extends _i1.ServerpodClientShared {
               disconnectStreamsOnLostInternetConnection,
         ) {
     example = EndpointExample(this);
+    todo = EndpointTodo(this);
   }
 
   late final EndpointExample example;
 
+  late final EndpointTodo todo;
+
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'example': example,
+        'todo': todo,
+      };
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};

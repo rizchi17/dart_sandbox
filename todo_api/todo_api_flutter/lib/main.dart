@@ -2,13 +2,7 @@ import 'package:todo_api_client/todo_api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
-// Sets up a singleton client object that can be used to talk to the server from
-// anywhere in our app. The client is generated from your server code.
-// The client is set up to connect to a Serverpod running on a local server on
-// the default port. You will need to modify this to connect to staging or
-// production servers.
-var client = Client('http://$localhost:8080/')
-  ..connectivityMonitor = FlutterConnectivityMonitor();
+var client = Client('http://$localhost:8080/')..connectivityMonitor = FlutterConnectivityMonitor();
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Serverpod Example'),
+      home: const MyHomePage(title: 'Serverpod Todo List'),
     );
   }
 }
@@ -39,22 +33,62 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  // These fields hold the last result or error message that we've received from
-  // the server or null if no result exists yet.
   String? _resultMessage;
   String? _errorMessage;
-
+  List<Todo> _todo = [];
   final _textEditingController = TextEditingController();
 
-  // Calls the `hello` method of the `example` endpoint. Will set either the
-  // `_resultMessage` or `_errorMessage` field, depending on if the call
-  // is successful.
-  void _callHello() async {
+  Future<void> _fetchTodos() async {
     try {
-      final result = await client.example.hello(_textEditingController.text);
+      final result = await client.todo.getAllTodos();
+      _todo = result;
       setState(() {
         _errorMessage = null;
-        _resultMessage = result;
+        _resultMessage = 'Todosが正常に取得されました';
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = '$e';
+      });
+    }
+  }
+
+  Future<void> _addTodo() async {
+    try {
+      await client.todo.addTodo(text: _textEditingController.text);
+      _textEditingController.clear();
+      setState(() {
+        _errorMessage = null;
+        _resultMessage = 'Todosが正常に追加されました';
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = '$e';
+      });
+    }
+  }
+
+  Future<void> _updateTodo(Todo todo, int index) async {
+    try {
+      final newTodo = todo.copyWith(done: !todo.done);
+      await client.todo.updateTodo(todo: newTodo, index: index);
+      setState(() {
+        _errorMessage = null;
+        _resultMessage = 'Todosが正常に完了されました';
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = '$e';
+      });
+    }
+  }
+
+  Future<void> _deleteTodo(int index) async {
+    try {
+      await client.todo.deleteTodo(index: index);
+      setState(() {
+        _errorMessage = null;
+        _resultMessage = 'Todosが削除に追加されました';
       });
     } catch (e) {
       setState(() {
@@ -78,20 +112,61 @@ class MyHomePageState extends State<MyHomePage> {
               child: TextField(
                 controller: _textEditingController,
                 decoration: const InputDecoration(
-                  hintText: 'Enter your name',
+                  hintText: 'Todoを入力',
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
               child: ElevatedButton(
-                onPressed: _callHello,
-                child: const Text('Send to Server'),
+                onPressed: _fetchTodos,
+                child: const Text('Get Todos'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  await _addTodo();
+                  await _fetchTodos();
+                },
+                child: const Text('Add Todo'),
               ),
             ),
             _ResultDisplay(
               resultMessage: _resultMessage,
               errorMessage: _errorMessage,
+            ),
+            Flexible(
+              child: ListView(
+                children: _todo.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  Todo todo = entry.value;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () async {
+                                await _deleteTodo(index);
+                                await _fetchTodos();
+                              },
+                              icon: Icon(Icons.delete)),
+                          Text(todo.text),
+                        ],
+                      ),
+                      Checkbox(
+                        value: todo.done,
+                        onChanged: (value) async {
+                          await _updateTodo(todo, index);
+                          await _fetchTodos();
+                        },
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
             ),
           ],
         ),
