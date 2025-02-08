@@ -35,13 +35,13 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   String? _resultMessage;
   String? _errorMessage;
-  List<Todo> _todo = [];
+  List<Todo> _todos = [];
   final _textEditingController = TextEditingController();
 
   Future<void> _fetchTodos() async {
     try {
       final result = await client.todo.getAllTodos();
-      _todo = result;
+      _todos = result;
       setState(() {
         _errorMessage = null;
         _resultMessage = 'Todosが正常に取得されました';
@@ -139,7 +139,7 @@ class MyHomePageState extends State<MyHomePage> {
             ),
             Flexible(
               child: ListView(
-                children: _todo.asMap().entries.map((entry) {
+                children: _todos.asMap().entries.map((entry) {
                   int index = entry.key;
                   Todo todo = entry.value;
                   return Row(
