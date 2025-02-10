@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -7,7 +8,7 @@ import 'package:todo_api_shelf/todo.dart';
 List<Todo> todos = [Todo(id: 0, text: 'text', done: false)];
 
 Response listTodosHandler(Request req) => Response(
-      200,
+      HttpStatus.ok,
       headers: {
         ..._jsonHeaders,
         'Cache-Control': 'no-store',
@@ -22,36 +23,48 @@ Response listTodosHandler(Request req) => Response(
 Future<Response> postTodoHandler(Request req) async {
   final body = await req.readAsString();
   final Map<String, dynamic> data = jsonDecode(body);
-  // TODO: dataが期待するデータの形式でなければエラーを返す
+  if (data['text'] == null) {
+    return Response(HttpStatus.badRequest);
+  }
 
   todos.add(Todo(id: todos.length, text: data['text'], done: false));
-
-  return Response(201);
+  return Response(HttpStatus.created);
 }
 
 Future<Response> putTodoHandler(Request req) async {
   final id = req.params['id'];
   if (id == null) {
-    return Response(400);
+    return Response(HttpStatus.badRequest);
   }
   final idInt = int.parse(id);
+
   final body = await req.readAsString();
   final Map<String, dynamic> data = jsonDecode(body);
-  Todo todo = todos.firstWhere((todo) => todo.id == data['id']);
-  if (todo.id == -1) {
-    return Response(400);
+
+  final index = todos.indexWhere((todo) => todo.id == idInt);
+  if (index == -1) {
+    return Response(HttpStatus.badRequest);
   }
-  todos.fillRange(idInt, idInt + 1, Todo(id: idInt, text: data['text'], done: !data['done']));
-  return Response(200);
+
+  if ((data['text'] == null) || (data['done'] == null)) {
+    return Response(HttpStatus.badRequest);
+  }
+
+  todos.fillRange(index, index + 1, Todo(id: idInt, text: data['text'], done: !data['done']));
+  return Response(HttpStatus.ok);
 }
 
-Future<Response> deleteTodoHandler(Request req) async {
+Response deleteTodoHandler(Request req) {
   final id = req.params['id'];
   if (id == null) {
-    return Response(400);
+    return Response(HttpStatus.badRequest);
   }
-  // TODO: dataが期待するデータの形式でなければエラーを返す
-  todos.removeWhere((todo) => todo.id == int.parse(id));
+  final idInt = int.parse(id);
+  final index = todos.indexWhere((todo) => todo.id == idInt);
+  if (index == -1) {
+    return Response(HttpStatus.badRequest);
+  }
+  todos.removeWhere((todo) => todo.id == idInt);
   return Response(200);
 }
 
