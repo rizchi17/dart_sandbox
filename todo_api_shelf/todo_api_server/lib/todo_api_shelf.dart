@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:todo_api_shelf/todo.dart';
+import 'todo.dart';
 
 List<Todo> todos = [Todo(id: 0, text: 'text', done: false)];
 
