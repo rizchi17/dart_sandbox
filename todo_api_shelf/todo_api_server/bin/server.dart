@@ -1,7 +1,7 @@
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart';
-import '../lib/todo_api_shelf.dart';
+import 'package:todo_api_shelf/todo_api_shelf.dart';
 
 final _router = Router()
   ..post('/todos', postTodoHandler)

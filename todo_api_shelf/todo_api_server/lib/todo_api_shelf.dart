@@ -50,7 +50,7 @@ Future<Response> putTodoHandler(Request req) async {
     return Response(HttpStatus.badRequest);
   }
 
-  todos.fillRange(index, index + 1, Todo(id: idInt, text: data['text'], done: !data['done']));
+  todos.fillRange(index, index + 1, Todo(id: idInt, text: data['text'], done: data['done']));
   return Response(HttpStatus.ok);
 }
 
