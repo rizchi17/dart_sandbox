@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:todo_api_shelf/todo.dart';
+import 'todo.dart';
 
 List<Todo> todos = [Todo(id: 0, text: 'text', done: false)];
 
@@ -50,7 +50,7 @@ Future<Response> putTodoHandler(Request req) async {
     return Response(HttpStatus.badRequest);
   }
 
-  todos.fillRange(index, index + 1, Todo(id: idInt, text: data['text'], done: !data['done']));
+  todos.fillRange(index, index + 1, Todo(id: idInt, text: data['text'], done: data['done']));
   return Response(HttpStatus.ok);
 }
 
